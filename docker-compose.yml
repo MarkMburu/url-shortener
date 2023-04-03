@@ -1,0 +1,33 @@
+version: "3"
+services:
+  api-server:
+    container_name: urlshortener-springboot
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/shortener?enabledTLSProtocols=TLSv1.2
+    ports:
+      - "8080:8080"
+    networks:
+      - urlshortener-mysql-network
+    depends_on:
+      - api-db
+
+  api-db:
+    container_name: mysqlurldb
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    networks:
+      - urlshortener-mysql-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=shortener
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    ports:
+      - '3306:3306'
+
+networks:
+  urlshortener-mysql-network:

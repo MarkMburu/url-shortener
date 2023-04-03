@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ShortenUrlRepository extends JpaRepository<ShortenUrlEntity, Long> {
-
-    @Query("SELECT u FROM url u WHERE u.fullUrl = ?1")
+    @Query("SELECT ob FROM url ob WHERE ob.fullUrl = ?1")
     List<ShortenUrlEntity> findUrlByFullUrl(String fullUrl);
 }

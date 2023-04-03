@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.NoSuchElementException;
-
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 public class ShortenUrlController {
 

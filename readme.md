@@ -10,16 +10,14 @@ This project depends on
 * spring-boot-starter-web (Spring boot framework)
 * spring-boot-starter-data-jpa (for data persistence)
 * spring-boot-starter-actuator (for API statistics)
-* commons-validator:1.6 (for URL validation)
-* h2 (for tests)
-* spring-boot-starter-test (for testss)
+* commons-validator (for URL validation)
+* spring-boot-starter-test and h2 (for tests)
 
 ## Project Build 
 
 To build this project, run
 
 ```shell script
-git clone https://github.com/zeeshaanahmad/url-shortener.git
 cd url-shortener
 gradle clean build
 ```
@@ -27,8 +25,9 @@ gradle clean build
 ## Deployment
 
 Project build can be deployed using docker-compose.yml which sets up two containers for
-* MySql
 * REST API
+* MySql
+
 
 To deploy the project, run
 
@@ -120,13 +119,3 @@ I thought of two approaches
 Tested both of the approaches but in case of hashes, sometimes the hashes were longer than actual URL. Another issue was the readability and ease of remembering. So, I went with the second approach. With the Base conversion approach, even the maximum value of Long produces 10 characters which is still somewhat easy to remember. 
 > There is a dependency from Google named Guava that could be used here to generate hashes. Although murmur_3_32 hash implemented in Guava was generating up to 10 characters long string, I left it for future testing and evaluation.
 
-# Future Enhancements / Known Issues
-* Since the project is for demo purpose only, Passwords are in plaintext. Will consider using Jasypt to encrypt the password in future
-* Haven't implemented Front-end application yet
-* Faced issues with auto schema generation through JPA, so delegated the schema creation to Docker container
-* Faced issues with api container not being able to get connection while mysql container was being set up, so added `?autoReconnect=true&failOverReadOnly=false&maxReconnects=10&useSSL=false` to datasource url in application.properties. It slows down the application startup. You may remove that part if you want.
-* Implement https
-* Mount volumes for MySql container to persist data outside of the container
-
-# Contributors
-email: ahmad.zeeshaan@gmail.com

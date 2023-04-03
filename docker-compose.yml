@@ -1,7 +1,7 @@
 version: "3"
 services:
   api-server:
-    container_name: urlshortener-springboot
+    container_name: urlshortener
     build:
       context: .
       dockerfile: api.Dockerfile
@@ -10,24 +10,24 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - urlshortener-mysql-network
+      - urlshortenersystem-mysql-network
     depends_on:
       - api-db
 
   api-db:
-    container_name: mysqlurldb
+    container_name: shorten
     build:
       context: .
       dockerfile: db.Dockerfile
     networks:
-      - urlshortener-mysql-network
+      - urlshortenersystem-mysql-network
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=shortener
+      - MYSQL_DATABASE=shorten
       - MYSQL_USER=root
       - MYSQL_PASSWORD=root
     ports:
       - '3306:3306'
 
 networks:
-  urlshortener-mysql-network:
+  urlshortenersystem-mysql-network:

@@ -38,15 +38,15 @@ docker-compose up --build
 **The application will be accessible on http://localhost:8080**
 
 ### db.Dockerfile
-`db.Dockerfile` builds the docker image for MySql using MySql version 8 as the base image. It uses `schema.sql` at startup to set up the database schema.
+`db.Dockerfile` builds the docker image for MySql using MySql version 8 as the base image. It uses `url.sql` at startup to set up the database schema.
 
 ### api.Dockerfile
 `api.Dockerfile` sets up an image to deploy the project's jar file generated above from `build/libs/url-shortener-0.0.1-SNAPSHOT.jar`. It exposes the API on port `8080`
 
 ### docker-compose.yml
-Provides the configuration for containers to host API and MySql. It sets up two services; `api-server` and `api-db` with container names `urlshortener-springboot` and `mysqlurldb` respectively. 
-The datasource url is being set in the `api-server` configuration so that it points to the MySql container.
-Both `api-server` and `api-db` are linked together through the `urlshortener-mysql-network` docker network. The network enables both the containers to communicate together.
+>> This provides the settings necessary to host API and MySQL in containers. With the container names "urlshortener" and "shorten," it creates the two services "api-server" and "api-db."
+The MySql container is specified as the datasource url in the 'api-server' setting.
+The docker network named "urlshortener-mysql-network" connects "api-server" and "api-db" together. The network permits communication between the two containers.
 
 ## API Endpoints
 
@@ -78,17 +78,17 @@ Response:
 }
 ```
 
-Please note that API works only with valid HTTP or HTTPS Urls. In case of malformed Url, it returns `400 Bad Request` error with response body containing a JSON object in the following format
+* Please take note that only valid HTTP or HTTPS Urls can be used with the API. If the URL is invalid, it returns a "400 Bad Request" error and a JSON object in the response body with the following structure.
 
 ```json
 {
   "field":"originalUrl",
-  "value":"<Malformed Url provided in the request>",
+  "value":"<Invalid Url provided in the request>",
   "message":"<Exception message>"
 }
 ```
 
-### GET `/<shortened_text>`
+### GET `/<shortened_url>`
 
 This endpoint redirects to the corresponding originalUrl.
 
@@ -102,20 +102,12 @@ Included the spring boot actuator dependency for API metrics. You can try this e
 curl -X GET   http://localhost:8080/actuator/health
 ```
 
-## Undeploy
-
-To undeploy the containers, run
-
-```shell script
-docker-compose down
-```
-
 # Url Shortening Algorithm
 
 I thought of two approaches
 1. Generating hashes for the originalUrl and storing them as key value pairs in redis cache or in mysql database
 2. Performing a Base62 conversion from Base10 on the id of stored originalUrl
 
-Tested both of the approaches but in case of hashes, sometimes the hashes were longer than actual URL. Another issue was the readability and ease of remembering. So, I went with the second approach. With the Base conversion approach, even the maximum value of Long produces 10 characters which is still somewhat easy to remember. 
-> There is a dependency from Google named Guava that could be used here to generate hashes. Although murmur_3_32 hash implemented in Guava was generating up to 10 characters long string, I left it for future testing and evaluation.
+I tested both strategies, but while using hashes, the hashes occasionally exceeded the length of the URL. The readability and memorability were other problems. I chose the second strategy, thus. Even the highest value of Long yields 10 characters using the base conversion method, which are still quite simple to remember.
+>> Guava, a dependency from Google, might be utilized to produce hashes in this situation. Despite the fact that the murmur 3 32 hash implemented in Guava could produce strings up to 10 characters long.
 

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: url-shortener-system-service
+  namespace: url-shortener-system
+spec:
+  selector:
+    app: url-shortener-system
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

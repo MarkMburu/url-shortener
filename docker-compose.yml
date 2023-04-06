@@ -1,33 +1,24 @@
-version: "3"
+# Use root/example as user/password credentials
+version: '3.1'
+
 services:
-  api-server:
-    container_name: urlshortener
-    build:
-      context: .
-      dockerfile: api.Dockerfile
+  mongodb:
+    image: mongo
+    restart: always
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/shortener?enabledTLSProtocols=TLSv1.2
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: #Mack1789
+  shortener:
+    image: ghcr.io/markmburu/url-shortener:latest
+    restart: always
+    depends_on:
+      - mongodb
     ports:
       - "8080:8080"
-    networks:
-      - urlshortenersystem-mysql-network
-    depends_on:
-      - api-db
-
-  api-db:
-    container_name: shorten
-    build:
-      context: .
-      dockerfile: db.Dockerfile
-    networks:
-      - urlshortenersystem-mysql-network
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=shorten
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
-    ports:
-      - '3306:3306'
-
-networks:
-  urlshortenersystem-mysql-network:
+      MONGODB_URL: mongodb://localhost:27017/url-shortener?directConnection=true&ssl=false&authSource=admin
+      JWT_ISSUER: http://localhost:8080/
+      JWT_AUDIENCE: url-shortener
+      JWT_SECRET: SOME_RANDOM_STRING
+      JWT_EXPIRATION_SECONDS: 7200
+      JWT_REFRESH_TOKEN_EXPIRATION_SECONDS: 7200

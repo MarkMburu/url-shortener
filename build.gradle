@@ -1,29 +1,100 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
+    id 'java'
+    id 'maven-publish'
+    id 'org.springframework.boot' version '3.0.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'jacoco'
 }
 
-group = 'com.markmburu.interview.urlshortener'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+group = 'dev.mgbarbosa.urlshortener'
+version = '0.1.0'
+description = 'url-shortener'
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
-	mavenCentral()
+    jcenter()
+    mavenCentral()
+}
+
+configurations {
+    all*.exclude module : 'spring-boot-starter-logging'
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'commons-validator:commons-validator:1.6'
-	implementation 'org.projectlombok:lombok:1.18.10'
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'mysql:mysql-connector-java'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-	}
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:3.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.0.0'
+    implementation 'org.springframework.security:spring-security-core:6.0.0'
+    implementation 'org.springframework.security:spring-security-test:6.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.0.0'
+    implementation 'org.springframework.data:spring-data-redis:3.0.0'
+    implementation 'org.slf4j:slf4j-api:2.0.6'
+    implementation 'org.slf4j:slf4j-simple:2.0.6'
+
+    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'com.auth0:java-jwt:4.2.1'
+    implementation 'io.lettuce:lettuce-core:6.2.1.RELEASE'
+    implementation 'dev.failsafe:failsafe:3.2.4'
+    implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'com.github.javafaker:javafaker:1.0.2'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'it.ozimov:embedded-redis:0.7.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
-	useJUnitPlatform()
+    // Enable JUnit 5 (Gradle 4.6+).
+    useJUnitPlatform()
+
+    // Always run tests, even when nothing changed.
+    dependsOn 'cleanTest'
+
+    systemProperty('spring.profiles.active', 'test')
+
+    // Show test results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+bootRun {
+    var isProduction = System.getenv("ENVIRONMENT")
+    if (!isProduction) {
+        systemProperty('spring.config.import', 'optional:file:.env[.properties]')
+    }
+
+    jvmArgs("-DconfigFileName=config/application.deployment.yaml", "-DchecksumEnabled=false")
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+    dependsOn 'test'
+
+    reports {
+        xml.required = true
+        xml.enabled true
+        html.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+
+                    ])
+        })
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }

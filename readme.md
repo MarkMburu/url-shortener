@@ -1,113 +1,111 @@
-# URL Shortener
+# Url Shortener
 
-Spring Boot based REST API that takes a URL and returns a shortened URL and uses MySQL to persist data.
+An open source ready for usage url shortener.
 
-# Getting Started
+Feel free to use the API (as long there's no abuse) for shortening/testing the API.
 
-## Dependencies
+## Roadmap
+- [x] Creating new Shortened URL
+- [x] Fetching shorted URL
+- [x] Redirect endpoint
+- [x] Create User
+- [x] Create private url
 
-This project depends on 
-* spring-boot-starter-web (Spring boot framework)
-* spring-boot-starter-data-jpa (for data persistence)
-* spring-boot-starter-actuator (for API statistics)
-* commons-validator (for URL validation)
-* spring-boot-starter-test and h2 (for tests)
+## Basic Usage
 
-## Project Build 
+The endpoints below are basic usage, there's also more features, but they are on beta, that being said, it will not be included for now.
 
-To build this project, run
-
-```shell script
-cd url-shortener
-gradle clean build
+### Creating new shortened URL
 ```
-
-## Deployment
-
-Project build can be deployed using docker-compose.yml which sets up two containers for
-* REST API
-* MySql
-
-
-To deploy the project, run
-
-```shell script
-docker-compose up --build
-```
-
-**The application will be accessible on http://localhost:8080**
-
-### db.Dockerfile
-`db.Dockerfile` builds the docker image for MySql using MySql version 8 as the base image. It uses `url.sql` at startup to set up the database schema.
-
-### api.Dockerfile
-`api.Dockerfile` sets up an image to deploy the project's jar file generated above from `build/libs/url-shortener-0.0.1-SNAPSHOT.jar`. It exposes the API on port `8080`
-
-### docker-compose.yml
->> This provides the settings necessary to host API and MySQL in containers. With the container names "urlshortener" and "shorten," it creates the two services "api-server" and "api-db."
-The MySql container is specified as the datasource url in the 'api-server' setting.
-The docker network named "urlshortener-mysql-network" connects "api-server" and "api-db" together. The network permits communication between the two containers.
-
-## API Endpoints
-
-You can access following API endpoints at http://localhost:8080
-
-### POST `/shorten`
-It takes a JSON object in the following format as payload
-
-```json
+curl -X POST 'http://localhost:8080/api/v1/shortener' \
+              -H 'Content-Type: application/json' \
+              -d '{"url": "https://www.reuters.com/article/urnidgns002570f3005978d8002576f60035a6bb-idUS98192761820100330"}'
+              
+Response:
 {
-  "originalUrl":"<The URL to be shortened>"
+   "id": "2b99abe2-1f24-4964-91e5-f7517f4dc16b",
+   "createdAt": "2023-02-20T00:04:27.977013737",
+   "originalUrl": "SOME_LONG_URL",
+   "shortenedUrl": "https://www.reuters.com/article/urnidgns002570f3005978d8002576f60035a6bb-idUS98192761820100330"
 }
 ```
 
-#### cURL
-
-```shell script
-curl -X POST \
-  http://localhost:8080/shorten \
-  -H 'Content-Type: application/json' \
-  -d '{"originalUrl":"https://example.com/example/1"}'
+### Fetching Shortened URL details
 ```
+curl -X GET 'http://localhost:8080/api/v1/shortener/mjprJAuqhm'
 
 Response:
-
-```json
 {
-  "shortenedUrl": "<shortened url for the originalUrl provided in the request payload>"
+   "id": "2b99abe2-1f24-4964-91e5-f7517f4dc16b",
+   "createdAt": "2023-02-20T00:04:27.977013737",
+   "originalUrl": "SOME_LONG_URL",
+   "shortenedUrl": "https://www.reuters.com/article/urnidgns002570f3005978d8002576f60035a6bb-idUS98192761820100330"
 }
 ```
 
-* Please take note that only valid HTTP or HTTPS Urls can be used with the API. If the URL is invalid, it returns a "400 Bad Request" error and a JSON object in the response body with the following structure.
+### Redirect to URL
+This endpoint is exclusively for being redirect to the original url. Paste the URL
+below to your browser and you will be redirected.
+```
+http://localhost:8080/api/v1/redirect/abcfg
+```
 
+
+## Running with Docker-Compose
+There's already a configured `docker-compose.yaml` file in the project root, so you can 
+easily start the project locally following the instructions:
+
+1. Open `docker-compose.yml`
+2. Change the required environment variables
+3. If you build the image locally, change the image property
+4. Start the apps with `docker-compose up -d`
+
+You should be able to reach the app accessing `http://localhost:8080/api/v1/ping` on your browser
+
+## Manually running it with Docker
+
+- Make sure that you have docker running 
+- Pull the image with: `docker pull ghcr.io/markmburu/url-shortener:latest`
+
+Start the container with
+```
+    docker run --name some-url-shortener \
+        --restart always \
+        -e 'MONGODB_URL=mongodb://localhost:27017/url-shortener?directConnection=true&ssl=false&authSource=admin' \
+        -e 'JWT_ISSUER=http://localhost:8080' \ 
+        -e 'JWT_AUDIENCE=http://localhost:8080' \
+        -e 'JWT_EXPIRATION_SECONDS=7200' \
+        -e 'JWT_REFRESH_TOKEN_EXPIRATION_SECONDS=7200' \
+        -p 8080:8080 \
+        -d ghcr.io/m4urici0gm/url-shortener:latest
+```
+Check if the app is running with `curl 'http://localhost:8080/api/ping' | json_pp`.
+If everything went fine, you should be able to see the response like this:
 ```json
 {
-  "field":"originalUrl",
-  "value":"<Invalid Url provided in the request>",
-  "message":"<Exception message>"
+   "message" : "Hello World!"
 }
 ```
 
-### GET `/<shortened_url>`
+## Prerequisites
+Before you begin, ensure you have met the following requirements:
+- Java JDK 17 or later
+- A running mongodb instance.
 
-This endpoint redirects to the corresponding originalUrl.
+## Running it locally (dev environment)
+1. Fork the repository
+2. Make sure you have a running mongodb instance
+3. Creates (if it doesnt exist) a .env file on the project root (You can use the template below)
+4. Build the project with ```./gradlew clean build```
+5. Run the project with ```./gradlew bootRun```
+6. The app should be running at ```http://localhost:8080```
 
-### GET `/actuator/health`
-
-Included the spring boot actuator dependency for API metrics. You can try this endpoint for health checks.
-
-#### cURL
-
-```shell script
-curl -X GET   http://localhost:8080/actuator/health
+### Template file for .env
 ```
-
-# Url Shortening Algorithm
-
-I thought of two approaches
-1. Generating hashes for the originalUrl and storing them as key value pairs in redis cache or in mysql database
-2. Performing a Base62 conversion from Base10 on the id of stored originalUrl
-
-I tested both strategies, but while using hashes, the hashes occasionally exceeded the length of the URL. The readability and memorability were other problems. I chose the second strategy, thus. Even the highest value of Long yields 10 characters using the base conversion method, which are still quite simple to remember.
->> Guava, a dependency from Google, might be utilized to produce hashes in this situation. Despite the fact that the murmur 3 32 hash implemented in Guava could produce strings up to 10 characters long.
-
+MONGODB_URL=mongodb://root:blueScreen#666@localhost:27017/url-shortener
+JWT_ISSUER=http://localhost:8080/
+JWT_AUDIENCE=url-shortener
+JWT_SECRET=SOME_RANDOM_STRING
+JWT_EXPIRATION_SECONDS=7200
+JWT_REFRESH_TOKEN_EXPIRATION_SECONDS=7200
+```

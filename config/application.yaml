@@ -1,0 +1,30 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: '6370'
+    mongodb:
+      uri: ${MONGODB_URL}
+      uuid-representation: standard
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+springdoc:
+  api-docs:
+    path: /api/v1/docs-file
+  swagger-ui:
+    path: /api/v1/docs
+jwt:
+  expiration-seconds: ${JWT_EXPIRATION_SECONDS}
+  secret: ${JWT_SECRET}
+  refresh-expiration-seconds: ${JWT_REFRESH_TOKEN_EXPIRATION_SECONDS}
+  issuer: ${JWT_ISSUER}
+  audience: ${JWT_AUDIENCE}
+logging:
+  level:
+    dev:
+      mgbarbosa:
+        urlshortner: debug
+    root: info

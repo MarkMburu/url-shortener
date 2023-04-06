@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-shortener-system
+  namespace: url-shortener-system
+  labels:
+    app: url-shortener-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: url-shortener-system
+  template:
+    metadata:
+      labels:
+        app: url-shortener-system
+    spec:
+      containers:
+        - name: url-shortener-system
+          image: ghcr.io/markmburu/url-shortener-system:latest
+          imagePullPolicy: Always
+          env:
+            - name: JWT_REFRESH_TOKEN_EXPIRATION_SECONDS
+              value: '7200'
+            - name: JWT_EXPIRATION_SECONDS
+              value: '7200'
+            - name: JWT_ISSUER
+              value:
+            - name: JWT_AUDIENCE
+              value:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: value
+                  optional: false
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-system
+                  key: value
+                  optional: false
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 1000m
+      imagePullSecrets:
+        - name: github-actions

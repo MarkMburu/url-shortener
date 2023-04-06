@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: url-shortener-system-certificate
+  namespace: url-shortener-system
+spec:
+  secretName: url-shortener-cert-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    -

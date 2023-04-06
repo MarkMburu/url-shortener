@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'org.springframework.boot' version '3.0.0'
+    id 'org.springframework.boot' version '3.0.5'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'jacoco'
 }
@@ -49,10 +49,8 @@ dependencies {
 }
 
 test {
-    // Enable JUnit 5 (Gradle 4.6+).
     useJUnitPlatform()
 
-    // Always run tests, even when nothing changed.
     dependsOn 'cleanTest'
 
     systemProperty('spring.profiles.active', 'test')

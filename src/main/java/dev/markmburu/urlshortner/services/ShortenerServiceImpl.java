@@ -32,11 +32,6 @@ public class ShortenerServiceImpl implements ShortenerService {
         this.cachingShortedUrlRepository = cachingShortedUrlRepository;
     }
 
-    /**
-     * Tries to create new shortenedUrl
-     * @param request
-     * @return
-     */
     @Override
     public ShortenedUrlDto createShortUrl(CreateShortUrlRequest request) throws AccessDeniedException {
         var maybeClaims = getAuthenticatedUserId();
@@ -71,13 +66,6 @@ public class ShortenerServiceImpl implements ShortenerService {
         return Optional.of(authenticationService.getAuthenticatedUser());
     }
 
-    /**
-     * Tries to find ShortenedUrl based on specified id.
-     *
-     * @param urlId the shortenedUrl to be found.
-     * @return the found item
-     * @throws EntityNotFoundException if entity is not present on the database.
-     */
     @Override
     public ShortenedUrlDto findShortUrlBy(String urlId) {
         var maybeCached = cachingShortedUrlRepository.findByShortVersion(urlId);

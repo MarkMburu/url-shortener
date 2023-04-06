@@ -6,7 +6,7 @@ plugins {
     id 'jacoco'
 }
 
-group = 'dev.mgbarbosa.urlshortener'
+group = 'dev.markmburu.urlshortener'
 version = '0.1.0'
 description = 'url-shortener'
 java.sourceCompatibility = JavaVersion.VERSION_17

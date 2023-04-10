@@ -59,7 +59,7 @@ You should be able to reach the app accessing `http://localhost:8080/api/v1/ping
 ## Manually running it with Docker
 
 - Make sure that you have docker running 
-- Pull the image with: `docker pull ghcr.io/markmburu/url-shortener:latest`
+- Pull the image 
 
 Start the container with
 ```

@@ -3,11 +3,10 @@ package dev.markmburu.urlshortner.controllers;
 import dev.markmburu.urlshortner.services.interfaces.ShortenerService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.web.bind.annotation.*;
+
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v1/redirect")
 public class RedirectController {

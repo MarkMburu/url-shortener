@@ -1,12 +1,6 @@
-# Url Shortener
-
-An open source ready for usage url shortener.
-
-Feel free to use the API (as long there's no abuse) for shortening/testing the API.
-
-## Roadmap
-- [x] Creating new Shortened URL
-- [x] Fetching shorted URL
+## Goals
+- [x] Create new Short URL
+- [x] Fetch short URL
 - [x] Redirect endpoint
 - [x] Create User
 - [x] Create private url
@@ -19,14 +13,14 @@ The endpoints below are basic usage, there's also more features, but they are on
 ```
 curl -X POST 'http://localhost:8080/api/v1/shortener' \
               -H 'Content-Type: application/json' \
-              -d '{"url": "https://www.reuters.com/article/urnidgns002570f3005978d8002576f60035a6bb-idUS98192761820100330"}'
+              -d '{"url": "shorturl"}'
               
 Response:
 {
-   "id": "2b99abe2-1f24-4964-91e5-f7517f4dc16b",
-   "createdAt": "2023-02-20T00:04:27.977013737",
-   "originalUrl": "SOME_LONG_URL",
-   "shortenedUrl": "https://www.reuters.com/article/urnidgns002570f3005978d8002576f60035a6bb-idUS98192761820100330"
+   "id": "",
+   "createdAt": "",
+   "originalUrl": "long url",
+   "shortenedUrl": "shorturl"
 }
 ```
 
@@ -36,10 +30,10 @@ curl -X GET 'http://localhost:8080/api/v1/shortener/mjprJAuqhm'
 
 Response:
 {
-   "id": "2b99abe2-1f24-4964-91e5-f7517f4dc16b",
-   "createdAt": "2023-02-20T00:04:27.977013737",
-   "originalUrl": "SOME_LONG_URL",
-   "shortenedUrl": "https://www.reuters.com/article/urnidgns002570f3005978d8002576f60035a6bb-idUS98192761820100330"
+   "id": "",
+   "createdAt": "",
+   "originalUrl": "longurl",
+   "shortenedUrl": "short url"
 }
 ```
 
@@ -47,7 +41,7 @@ Response:
 This endpoint is exclusively for being redirect to the original url. Paste the URL
 below to your browser and you will be redirected.
 ```
-http://localhost:8080/api/v1/redirect/abcfg
+http://localhost:8080/api/v1/redirect/ocf
 ```
 
 
@@ -95,17 +89,16 @@ Before you begin, ensure you have met the following requirements:
 ## Running it locally (dev environment)
 1. Fork the repository
 2. Make sure you have a running mongodb instance
-3. Creates (if it doesnt exist) a .env file on the project root (You can use the template below)
-4. Build the project with ```./gradlew clean build```
-5. Run the project with ```./gradlew bootRun```
-6. The app should be running at ```http://localhost:8080```
+3. Creates (if it doesn't exist) a .env file on the project root (You can use the template below)
+4. Build the project with ```mvn clean install```
+5The app should be running at ```http://localhost:8080```
 
-### Template file for .env
+### Environment configuration(.env)
 ```
-MONGODB_URL=mongodb://root:blueScreen#666@localhost:27017/url-shortener
+MONGODB_URL=mongodb://localhost:27017/url-shortener?directConnection=true&ssl=false&authSource=admin
 JWT_ISSUER=http://localhost:8080/
 JWT_AUDIENCE=url-shortener
-JWT_SECRET=SOME_RANDOM_STRING
-JWT_EXPIRATION_SECONDS=7200
-JWT_REFRESH_TOKEN_EXPIRATION_SECONDS=7200
+JWT_SECRET=My_SECRET
+JWT_EXPIRATION_SECONDS=3600
+JWT_REFRESH_TOKEN_EXPIRATION_SECONDS=3600
 ```
